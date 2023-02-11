@@ -900,6 +900,11 @@ std::vector<tr_block_span_t> tr_peerMgrGetNextRequests(tr_torrent* torrent, tr_p
             return torrent_->blockSpanForPiece(piece);
         }
 
+        [[nodiscard]] bool isFileFirstPiece(tr_piece_index_t piece) const override
+        {
+            return torrent_->isFileFirstPiece(piece);
+        }
+
         [[nodiscard]] tr_piece_index_t countAllPieces() const override
         {
             return torrent_->pieceCount();

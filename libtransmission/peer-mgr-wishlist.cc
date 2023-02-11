@@ -27,17 +27,30 @@ struct Candidate
     size_t n_blocks_missing;
     tr_priority_t priority;
     SaltType salt;
+    bool file_first_piece;
 
-    Candidate(tr_piece_index_t piece_in, size_t missing_in, tr_priority_t priority_in, SaltType salt_in)
+    Candidate(
+        tr_piece_index_t piece_in,
+        size_t missing_in,
+        tr_priority_t priority_in,
+        SaltType salt_in,
+        bool file_first_piece_in)
         : piece{ piece_in }
         , n_blocks_missing{ missing_in }
         , priority{ priority_in }
         , salt{ salt_in }
+        , file_first_piece{ file_first_piece_in }
     {
     }
 
     [[nodiscard]] int compare(Candidate const& that) const // <=>
     {
+        // prefer file first pieces
+        if (that.file_first_piece)
+        {
+            return -1;
+        }
+
         // prefer pieces closer to completion
         if (n_blocks_missing != that.n_blocks_missing)
         {
@@ -95,8 +108,10 @@ std::vector<Candidate> getCandidates(Wishlist::Mediator const& mediator)
     for (size_t i = 0; i < n; ++i)
     {
         auto const [piece, n_missing] = wanted_pieces[i];
+        auto const file_first_piece = mediator.isFileFirstPiece(piece);
+        auto const priority = mediator.priority(piece);
         auto const salt = is_sequential ? piece : salter();
-        candidates.emplace_back(piece, n_missing, mediator.priority(piece), salt);
+        candidates.emplace_back(piece, n_missing, priority, salt, file_first_piece);
     }
 
     return candidates;

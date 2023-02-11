@@ -29,6 +29,7 @@ protected:
         tr_piece_index_t piece_count_ = 0;
         bool is_endgame_ = false;
         bool is_sequential_download_ = false;
+        bool isFileFirstPiece_ = false;
 
         [[nodiscard]] bool clientCanRequestBlock(tr_block_index_t block) const final
         {
@@ -48,6 +49,11 @@ protected:
         [[nodiscard]] bool isSequentialDownload() const final
         {
             return is_sequential_download_;
+        }
+
+        [[nodiscard]] bool isFileFirstPiece(tr_piece_index_t piece) const final
+        {
+            return isFileFirstPiece_;
         }
 
         [[nodiscard]] size_t countActiveRequests(tr_block_index_t block) const final

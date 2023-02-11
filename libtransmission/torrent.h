@@ -303,6 +303,21 @@ public:
         return fpm_.pieceSpan(file);
     }
 
+    [[nodiscard]] auto isFileFirstPiece(tr_piece_index_t piece_id) const
+    {
+        auto const [begin_idx, end_idx] = fpm_.fileSpan(piece_id);
+
+        for (auto f_id = begin_idx; f_id < end_idx; f_id++)
+        {
+            auto pieces_ids = fpm_.pieceSpan(f_id);
+            if (pieces_ids.begin == piece_id)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     [[nodiscard]] auto fileOffset(tr_block_info::Location loc) const
     {
         return fpm_.fileOffset(loc.byte);
